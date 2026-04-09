@@ -1,10 +1,7 @@
 services:
   - type: web
     name: php-auth-app
-    runtime: php
-    plan: free
-    buildCommand: composer install --no-dev --optimize-autoloader
-    startCommand: "php -S 0.0.0.0:$PORT -t public"
+    runtime: docker
     healthCheckPath: /index.php
     envVars:
       - key: APP_ENV
