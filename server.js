@@ -144,7 +144,16 @@ app.get('/logout', (req, res) => {
 });
 
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`Node app is running on port ${PORT}`);
+// Initialize Database and Start server
+db.initializeDatabase().then(() => {
+    app.listen(PORT, () => {
+        console.log(`Node app is running on port ${PORT}`);
+    });
+}).catch(err => {
+    console.error("Critical: Failed to initialize database:", err);
+    // Still start the server so it can show error pages or health check can pass
+    app.listen(PORT, () => {
+        console.log(`Node app started in error state on port ${PORT}`);
+    });
 });
+

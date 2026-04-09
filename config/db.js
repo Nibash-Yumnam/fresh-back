@@ -6,10 +6,14 @@ const pool = new Pool({
 });
 
 async function initializeDatabase() {
+    if (!process.env.DATABASE_URL) {
+        console.error('DATABASE_URL is not set. Database operations will fail.');
+        return;
+    }
+    
     try {
         const client = await pool.connect();
         
-        // Auto-create users table if it does not exist
         await client.query(`
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
@@ -23,10 +27,11 @@ async function initializeDatabase() {
         console.log('Database connected and users table verified.');
         client.release();
     } catch (err) {
-        console.error('Database connection or initialization failed:', err);
+        console.error('Database connection or initialization failed:', err.message);
     }
 }
 
-initializeDatabase();
-
-module.exports = pool;
+module.exports = {
+    query: (text, params) => pool.query(text, params),
+    initializeDatabase
+};
