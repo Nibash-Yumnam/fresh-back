@@ -4,6 +4,7 @@ WORKDIR /var/www/html
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
+    git \
     unzip \
     && docker-php-ext-install pdo pdo_mysql
 
