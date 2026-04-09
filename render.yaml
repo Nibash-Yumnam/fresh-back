@@ -1,3 +1,9 @@
+databases:
+  - name: pg-auth-db
+    databaseName: user_db
+    user: db_user
+    plan: free
+
 services:
   - type: web
     name: php-auth-app
@@ -5,17 +11,13 @@ services:
     plan: free
     healthCheckPath: /
     envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: pg-auth-db
+          property: connectionString
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
         value: false
-      - key: DB_HOST
-        value: localhost
-      - key: DB_USER
-        value: root
-      - key: DB_PASSWORD
-        value: ""
-      - key: DB_NAME
-        value: user_db
-      - key: DB_PORT
-        value: 3306
+      - key: SESSION_SECRET
+        generateValue: true

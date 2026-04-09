@@ -61,7 +61,7 @@ app.post('/register', async (req, res) => {
     }
 
     try {
-        const [rows] = await db.execute('SELECT email FROM users WHERE email = ?', [email]);
+        const { rows } = await db.query('SELECT email FROM users WHERE email = $1', [email]);
         if (rows.length > 0) {
             req.session.register_error = 'Email is already registered';
             req.session.active_form = 'register';
@@ -69,7 +69,7 @@ app.post('/register', async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        await db.execute('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)', [name, email, hashedPassword, role]);
+        await db.query('INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4)', [name, email, hashedPassword, role]);
         
         req.session.active_form = 'login'; // Switch to login form smoothly
         res.redirect('/');
@@ -92,7 +92,7 @@ app.post('/login', async (req, res) => {
     }
 
     try {
-        const [rows] = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
+        const { rows } = await db.query('SELECT * FROM users WHERE email = $1', [email]);
         if (rows.length > 0) {
             const user = rows[0];
             const match = await bcrypt.compare(password, user.password);

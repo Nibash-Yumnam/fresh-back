@@ -1,27 +1,32 @@
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg');
 
-const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'user_db',
-    port: process.env.DB_PORT || 3306,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-    charset: 'utf8mb4'
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false // Required for Render Postgres
 });
 
-async function testConnection() {
+async function initializeDatabase() {
     try {
-        const connection = await pool.getConnection();
-        console.log('Database connected successfully');
-        connection.release();
+        const client = await pool.connect();
+        
+        // Auto-create users table if it does not exist
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(100) NOT NULL,
+                email VARCHAR(100) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                role VARCHAR(20) NOT NULL
+            );
+        `);
+        
+        console.log('Database connected and users table verified.');
+        client.release();
     } catch (err) {
-        console.error('Database connection failed:', err);
+        console.error('Database connection or initialization failed:', err);
     }
 }
 
-testConnection();
+initializeDatabase();
 
 module.exports = pool;
