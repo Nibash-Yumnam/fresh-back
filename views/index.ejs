@@ -1,30 +1,3 @@
-<?php
-
-session_start();
-
-$errors = [
-    'login' => $_SESSION['login_error'] ?? '',
-    'register' => $_SESSION['register_error']??''
-];
-$activeForm = $_SESSION['active_form'] ?? 'login';
-
-session_unset();
-
-function showError($error){
-    return !empty($error) ? "<p class='error-message'> $error</p>" : '';
-
-}
-
-function isActiveForm($formName, $activeForm){
-    return $formName === $activeForm ? 'active': '';
-
-}
-
-?>
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,13 +10,21 @@ function isActiveForm($formName, $activeForm){
 </head>
 
 <body>
+<%
+    function showError(error){
+        return error ? `<p class='error-message'>${error}</p>` : '';
+    }
+
+    function isActiveForm(formName, currentForm){
+        return formName === currentForm ? 'active': '';
+    }
+%>
+
     <div class="container">
-        <div class="form-box <?= isActiveForm('login',$activeForm); ?>"  id="login">
-            <form action="login_register.php" method="POST">
-                <h2>
-                    Login
-                </h2>
-                <?=  showError($errors['login']); ?>
+        <div class="form-box <%= isActiveForm('login', activeForm); %>"  id="login">
+            <form action="/login" method="POST">
+                <h2>Login</h2>
+                <%- showError(errors.login) %>
                 <input type="email" name="email" placeholder="email" required><br>
                 <input type="password" name="password" placeholder="password" required><br>
                 <button type="submit" name="login">Login</button>
@@ -53,16 +34,14 @@ function isActiveForm($formName, $activeForm){
         </div>
 
 
-        <div class="form-box <?=  isActiveForm('register',$activeForm); ?>" id="Register">
-            <form action="login_register.php" method="POST">
-                <h2>
-                    Register
-                </h2>
-                <?=  showError($errors['register']); ?>
+        <div class="form-box <%= isActiveForm('register', activeForm); %>" id="Register">
+            <form action="/register" method="POST">
+                <h2>Register</h2>
+                <%- showError(errors.register) %>
                 <input type="text" name="name" placeholder="Name" required><br>
                 <input type="email" name="email" placeholder="email" required><br>
                 <input type="password" name="password" placeholder="password" required><br>
-                <select name="role"required>
+                <select name="role" required>
                     <option value="">--role--</option>
                     <option value="user">user</option>
                     <option value="admin">admin</option>

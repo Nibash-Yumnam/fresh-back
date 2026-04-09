@@ -3,7 +3,7 @@ services:
     name: php-auth-app
     runtime: docker
     plan: free
-    healthCheckPath: /index.php
+    healthCheckPath: /
     envVars:
       - key: APP_ENV
         value: production
