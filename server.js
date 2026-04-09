@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 80;
 
 // Set up view engine
 app.set('view engine', 'ejs');
-app.set('views', path.join(__务__dirname, 'views'));
+app.set('views', path.join(__dirname, 'views'));
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
